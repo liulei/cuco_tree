@@ -121,5 +121,6 @@ extern	HEADER		header;
 extern	ALL			All;
 extern	double		DriftTable[DRIFT_TABLE_LENGTH];
 extern	double		GravKickTable[DRIFT_TABLE_LENGTH];
+extern	int			TreeReconstructFlag;
 
 #endif

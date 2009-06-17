@@ -35,3 +35,7 @@ void	pm_init_periodic_free(void);
 void	linklist_init(void);
 void	force_evaluate_shortrange(int target);
 int		get_timestep(int p);
+void	grav_tree(void);
+void	force_treeallocate(int maxnodes, int maxpart);
+void	force_treebuild(int npart);
+void	force_treeevaluate_shortrange(int target);

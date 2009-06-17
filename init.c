@@ -36,6 +36,11 @@ void init(void){
 	}
 
 	All.PM_Ti_endstep	=	All.PM_Ti_begstep	=	0;
+
+	force_treeallocate(0.7 * NumPart, NumPart);
+
+	TreeReconstructFlag	=	1;
+
 }
 
 void check_omega(void){

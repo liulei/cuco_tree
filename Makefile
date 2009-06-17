@@ -12,7 +12,7 @@ EXEC		=	cuco
 
 OBJS		=	allvars.o begrun.o init.o read_ic.o gravlist.o \
 				main.o driftfac.o longrange.o pm_periodic.o \
-				run.o predict.o accel.o io.o timestep.o
+				run.o predict.o accel.o io.o timestep.o gravtree.o
 
 INCL		=	allvars.h proto.h Makefile
 

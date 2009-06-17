@@ -10,3 +10,4 @@ HEADER		header;
 ALL			All;
 double		DriftTable[DRIFT_TABLE_LENGTH];
 double		GravKickTable[DRIFT_TABLE_LENGTH];
+int			TreeReconstructFlag;
