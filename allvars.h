@@ -115,6 +115,23 @@ typedef	struct	global_data{
 
 }ALL;
 
+typedef struct tagNODE{
+	FLOAT	len;
+	FLOAT	center[3];
+
+	union{
+		int	suns[8];
+		struct{
+			FLOAT	s[3];
+			FLOAT	mass;
+			int		bitflags;
+			int		sibling;
+			int		nextnode;
+			int		father;
+		}d;
+	}u;
+} NODE;
+
 extern	int			NumPart;
 extern	PARTICLE *	P;
 extern	HEADER		header;

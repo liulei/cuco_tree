@@ -39,5 +39,8 @@ void force_treeallocate(int maxnodes, int maxpart){
 }
 
 void force_treebuild(int npart){
+	
+	int		nfree;
+	NODE	* nfreep;
 
 }
