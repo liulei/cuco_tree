@@ -132,6 +132,10 @@ typedef struct tagNODE{
 	}u;
 } NODE, NODE_BASE;
 
+typedef struct tagEXTNODE{
+	FLOAT	vs[3];
+}EXTNODE, EXTNODE_BASE;
+
 extern	int			NumPart;
 extern	PARTICLE *	P;
 extern	HEADER		header;
@@ -144,5 +148,7 @@ extern	NODE_BASE	* Nodes_base;
 extern	int			MaxNodes;
 extern	int			* Nextnode;
 extern	int			* Father;
+extern	EXTNODE		* Extnodes;
+extern	EXTNODE_BASE	* Extnodes_base;
 
 #endif

@@ -69,13 +69,14 @@ void force_treeallocate(int maxnodes, int maxpart){
 
 	Extnodes_base	=	(EXTNODE_BASE *) malloc((MaxNodes + 1) * sizeof(EXTNODE_BASE));
 
-	Nodes	=	Nodes_base - Numpart;
+	Nodes	=	Nodes_base - NumPart;
 	
-	Extnodes	=	ExtNodes_base - NumPart;
+	Extnodes	=	Extnodes_base - NumPart;
 
 	Nextnode	=	(int *) malloc(NumPart * sizeof(int));
 
-	int	i;
+	int		i;
+	double	u;
 
 	for(i = 0; i < NTAB; ++i){
 		u	=	3.0 / NTAB * (i + 0.5);
@@ -93,7 +94,6 @@ void force_treeallocate(int maxnodes, int maxpart){
 	boxsize	=	All.BoxSize;
 	boxhalf	=	boxsize / 2.0;
 
-	printf("Initiate linklist...\n");
 	printf("to_grid_fac: %g\tasmth: %g\trcut: %g\n", 
 			to_grid_fac, asmth, rcut);
 
@@ -106,7 +106,7 @@ void force_treebuild(int npart){
 	NODE	* nfreep;
 
 	nfree	=	NumPart;
-	nfreep	=	&
+//	nfreep	=	
 
 
 }

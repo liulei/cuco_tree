@@ -16,3 +16,5 @@ NODE_BASE	* Nodes_base;
 int			MaxNodes;
 int			* Nextnode;
 int			* Father;
+EXTNODE		* Extnodes;
+EXTNODE_BASE	* Extnodes_base;

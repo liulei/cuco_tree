@@ -19,7 +19,9 @@ void begrun(void){
 
 	init_drift_table();
 
+#ifdef	LINKLIST
 	linklist_init();
+#endif
 
 	All.Ti_nextoutput	=	find_next_outputtime(All.Ti_Current);
 }

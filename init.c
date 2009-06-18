@@ -37,8 +37,9 @@ void init(void){
 
 	All.PM_Ti_endstep	=	All.PM_Ti_begstep	=	0;
 
+#ifdef	TREE
 	force_treeallocate(0.7 * NumPart, NumPart);
-
+#endif
 	TreeReconstructFlag	=	1;
 
 }
