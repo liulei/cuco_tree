@@ -130,7 +130,7 @@ typedef struct tagNODE{
 			int		father;
 		}d;
 	}u;
-} NODE;
+} NODE, NODE_BASE;
 
 extern	int			NumPart;
 extern	PARTICLE *	P;
@@ -139,5 +139,10 @@ extern	ALL			All;
 extern	double		DriftTable[DRIFT_TABLE_LENGTH];
 extern	double		GravKickTable[DRIFT_TABLE_LENGTH];
 extern	int			TreeReconstructFlag;
+extern	NODE		* Nodes;
+extern	NODE_BASE	* Nodes_base;
+extern	int			MaxNodes;
+extern	int			* Nextnode;
+extern	int			* Father;
 
 #endif

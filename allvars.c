@@ -11,3 +11,8 @@ ALL			All;
 double		DriftTable[DRIFT_TABLE_LENGTH];
 double		GravKickTable[DRIFT_TABLE_LENGTH];
 int			TreeReconstructFlag;
+NODE		* Nodes;
+NODE_BASE	* Nodes_base;
+int			MaxNodes;
+int			* Nextnode;
+int			* Father;
