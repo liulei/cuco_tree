@@ -44,4 +44,5 @@ void	gravity_tree(void);
 void	force_treeallocate(int maxnodes, int maxpart);
 void	force_treebuild(int npart);
 void	force_treeevaluate_shortrange(int target);
+void	force_update_node_recursive(int no, int sib, int father);
 #endif

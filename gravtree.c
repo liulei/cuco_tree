@@ -5,6 +5,8 @@
 #include	"allvars.h"
 #include	"proto.h"
 
+static	int		last;
+
 #define	NTAB	1000
 
 static float	shortrange_table[NTAB];
@@ -102,11 +104,130 @@ void force_treeallocate(int maxnodes, int maxpart){
 
 void force_treebuild(int npart){
 	
-	int		nfree;
+	int		i, subnode, parent, numnodes;
+	int		nfree, th, nn;
 	NODE	* nfreep;
+	double	lenhalf;
+	
+	subnode	=	0;
 
-	nfree	=	NumPart;
-//	nfreep	=	
+/*	create empty root node, size is just boxsize
+ */
+	nfree	=	NumPart;	/* index of first node */
+	nfreep	=	&Nodes[nfree];	/* pointer of first node */
 
+	nfreep->len	=	boxsize;	
+	for(i = 0; i < 3; ++i)
+		nfreep->center[i]	=	boxhalf;
+	for(i = 0; i < 8; ++i)
+		nfreep->u.suns[i]	=	-1;
+	
+	numnodes	=	1;
+	nfreep++;
+	nfree++;
+
+	parent	=	-1;
+
+/*	next insert all particles one by one
+ */
+	for(i = 0; i < NumPart; ++i){
+		
+		th	=	NumPart;
+
+		while(1){
+
+			if(th >= NumPart){
+			/* This is a node, continue.
+			 */
+				subnode	=	0;
+				if(P[i].Pos[0] > Nodes[th].center[0])
+					subnode	+=	1;
+				if(P[i].Pos[1] > Nodes[th].center[1])
+					subnode	+=	2;
+				if(P[i].Pos[2] > Nodes[th].center[2])
+					subnode	+=	4;
+
+				nn	=	Nodes[th].u.suns[subnode];
+
+				if(nn >= 0){
+					parent	=	th;
+					th	=	nn;
+				}else{
+					/* OK! We have find an empty slot, insert particle i here.
+					 */
+					Nodes[th].u.suns[subnode]	=	i;
+					break;
+				}
+			}else{
+			/* This is a particle, we have to generate a new node and insert 
+			 * the old one
+			 */
+				Nodes[parent].u.suns[subnode]	=	nfree;
+
+				nfreep->len	=	0.5 * Nodes[parent].len;
+				lenhalf	=	0.25 * Nodes[parent].len;
+
+				if(subnode & 1)
+					nfreep->center[0]	=	Nodes[parent].center[0] + lenhalf;
+				else
+					nfreep->center[0]	=	Nodes[parent].center[0] - lenhalf;
+
+				if(subnode & 2)
+					nfreep->center[1]	=	Nodes[parent].center[1] + lenhalf;
+				else
+					nfreep->center[1]	=	Nodes[parent].center[1] - lenhalf;
+
+				if(subnode & 1)
+					nfreep->center[2]	=	Nodes[parent].center[2] + lenhalf;
+				else
+					nfreep->center[2]	=	Nodes[parent].center[2] - lenhalf;
+
+				/* I think here does not use loop is for the sake of speed
+				 */
+				nfreep->u.suns[0]	=	-1;
+				nfreep->u.suns[1]	=	-1;
+				nfreep->u.suns[2]	=	-1;
+				nfreep->u.suns[3]	=	-1;
+				nfreep->u.suns[4]	=	-1;
+				nfreep->u.suns[5]	=	-1;
+				nfreep->u.suns[6]	=	-1;
+				nfreep->u.suns[7]	=	-1;
+
+				subnode	=	0;
+				if(P[th].Pos[0] > nfreep->center[0])
+					subnode	+=	1;
+				if(P[th].Pos[1] > nfreep->center[1])
+					subnode	+=	2;
+				if(P[th].Pos[2] > nfreep->center[2])
+					subnode	+=	4;
+
+				nfreep->u.suns[subnode]	=	th;
+
+				th	=	nfree;
+
+				numnodes++;
+				nfree++;
+				nfreep++;
+
+				if(numnodes >= MaxNodes){
+					printf("maximun number of tree nodes reached\n");
+					printf("we'd better stop!\n");
+					exit(1);
+				}
+			}
+		}
+	}
+
+	/* next computer multipole moments recursively.
+	 */
+	last	=	-1;
+	force_update_node_recursive(All.NumPart, -1, -1);
 
 }
+
+void force_update_node_recursive(int no, int sib, int father){
+
+}
+
+
+
