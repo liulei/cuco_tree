@@ -88,10 +88,84 @@ void force_treeevaluate_shortrange(int target){
 			dx	=	NEAREST(dx);
 			dy	=	NEAREST(dy);
 			dz	=	NEAREST(dz);
+
+			r2	=	dx * dx + dy * dy + dz * dz;
+
+			mass	=	P[no].Mass;
+
+			no	=	Nextnode[no];
+
+		}else{
+			
+			nop	=	&Nodes[no];
+
+			mass	=	nop->u.d.mass;
+
+			dx	=	nop->u.d.s[0] - pos_x;
+			dy	=	nop->u.d.s[1] - pos_y;
+			dz	=	nop->u.d.s[2] - pos_z;
+
+			dx	=	NEAREST(dx);
+			dy	=	NEAREST(dy);
+			dz	=	NEAREST(dz);
+
+			r2	=	dx * dx + dy * dy + dz * dz;
+
+			if(r2 > rcut){
+
+				eff_dist	=	rcut + 0.5 * nop->len;
+
+				dist	=	NEAREST(nop->center[0] - pos_x);
+				if(dist < -eff_dist || dist > eff_dist){
+					no	=	nop->u.d.sibling;
+					continue;
+				}
+
+				dist	=	NEAREST(nop->center[1] - pos_y);
+				if(dist < -eff_dist || dist > eff_dist){
+					no	=	nop->u.d.sibling;
+					continue;
+				}
+	
+				dist	=	NEAREST(nop->center[2] - pos_z);
+				if(dist < -eff_dist || dist > eff_dist){
+					no	=	nop->u.d.sibling;
+					continue;
+				}
+			}
+				
+			if(nop->len * nop->len > r2 * All.ErrTolTheta * All.ErrTolTheta){
+				no	=	nop->u.d.nextnode;
+				continue;
+			}
+
+			no	=	nop->u.d.sibling;
+		}
+					
+		r	=	sqrt(r2);
+					
+		if(r >= h){
+			fac	=	mass / (r2 * r);
+		}else{
+			u	=	r * h_inv;
+			if(u < 0.5)
+				fac	=	mass * h3_inv * (10.66667 + u * u * (32.0 * u - 38.4));
+			else
+				fac	=	mass * h3_inv * (21.33333 - 48.0 * u
+						+ 38.4 * u * u - 10.66667 * u * u * u - 0.06667 / (u * u * u));
+		}
+
+		tabindex	=	(int) (asmthfac * r);
+
+		if(tabindex < NTAB){
+
+			fac	*=	shortrange_table[tabindex];
+
+			acc_x	+=	dx * fac;
+			acc_y	+=	dy * fac;
+			acc_z	+=	dz * fac;
 		}
 	}
-
-
 }
 
 void force_treeallocate(int maxnodes, int maxpart){
