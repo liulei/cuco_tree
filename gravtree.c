@@ -5,6 +5,8 @@
 #include	"allvars.h"
 #include	"proto.h"
 
+#define NEAREST(x) (((x)>boxhalf)?((x)-boxsize):(((x)<-boxhalf)?((x)+boxsize):(x)))
+
 static	int		last;
 
 #define	NTAB	1000
@@ -60,6 +62,35 @@ void gravity_tree(void){
 }
 
 void force_treeevaluate_shortrange(int target){
+
+	NODE	* nop;
+	int		no;
+	double	r2, dx, dy, dz, mass, r, fac, u;
+	double	acc_x, acc_y, acc_z, pos_x, pos_y, pos_z;
+	
+	acc_x	=	0;
+	acc_y	=	0;
+	acc_z	=	0;
+
+	pos_x	=	P[target].Pos[0];
+	pos_y	=	P[target].Pos[1];
+	pos_z	=	P[target].Pos[2];
+
+	no	=	All.NumPart;	/* root node */
+	while(no >= 0){
+		
+		if(no < All.NumPart){
+
+			dx	=	P[no].Pos[0] - pos_x;
+			dy	=	P[no].Pos[1] - pos_y;
+			dz	=	P[no].Pos[2] - pos_z;
+
+			dx	=	NEAREST(dx);
+			dy	=	NEAREST(dy);
+			dz	=	NEAREST(dz);
+		}
+	}
+
 
 }
 
