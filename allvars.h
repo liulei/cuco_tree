@@ -90,6 +90,8 @@ typedef	struct	global_data{
 
 	double	Asmth;	/* Long-range/short-range split */
 	double	Rcut;	/* Maximum radius for which short range force is evaluated */
+	
+	double	ErrTolTheta;
 
 	double	ErrTolIntAccuracy;
 

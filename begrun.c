@@ -41,6 +41,8 @@ void read_parameter_file(void){
 
 	All.BoxSize		=	10000.0;
 
+	All.ErrTolTheta	=	0.5;
+
 	All.ErrTolIntAccuracy	=	0.025;
 
 	All.MaxSizeTimestep	=	0.03;

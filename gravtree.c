@@ -64,9 +64,10 @@ void gravity_tree(void){
 void force_treeevaluate_shortrange(int target){
 
 	NODE	* nop;
-	int		no;
+	int		no, tabindex;
 	double	r2, dx, dy, dz, mass, r, fac, u;
 	double	acc_x, acc_y, acc_z, pos_x, pos_y, pos_z;
+	double	eff_dist, dist;
 	
 	acc_x	=	0;
 	acc_y	=	0;
