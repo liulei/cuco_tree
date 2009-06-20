@@ -150,5 +150,6 @@ extern	int			* Nextnode;
 extern	int			* Father;
 extern	EXTNODE		* Extnodes;
 extern	EXTNODE_BASE	* Extnodes_base;
+extern	int			* Father;
 
 #endif

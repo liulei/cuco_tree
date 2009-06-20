@@ -77,6 +77,8 @@ void force_treeallocate(int maxnodes, int maxpart){
 
 	Nextnode	=	(int *) malloc(NumPart * sizeof(int));
 
+	Father	=	(int *)malloc(NumPart * sizeof(int));
+
 	int		i;
 	double	u;
 
@@ -223,10 +225,127 @@ void force_treebuild(int npart){
 	last	=	-1;
 	force_update_node_recursive(All.NumPart, -1, -1);
 
+	if(last >= All.NumPart)
+		Nodes[last].u.d.nextnode	=	-1;
+	else
+		Nextnode[last]	=	-1;
 }
 
 void force_update_node_recursive(int no, int sib, int father){
 
+	int	j, jj, p, pp, nextsib, suns[8];
+	PARTICLE	* pa;
+	double	s[3], vs[3], mass;
+
+	if(no > All.NumPart){
+	/* This is a node. */
+		for(j = 0; j < 8; ++j)
+			suns[j]	=	Nodes[no].u.suns[j];
+		
+		if(last >= 0){
+
+			if(last >= All.NumPart)
+				Nodes[last].u.d.nextnode	=	no;
+			else
+				Nextnode[last]	=	no;
+		}
+
+		last	=	no;
+
+		mass	=	0;
+		s[0]	=	0;
+		s[1]	=	0;
+		s[2]	=	0;
+		vs[0]	=	0;
+		vs[1]	=	0;
+		vs[2]	=	0;
+
+		for(j = 0; j < 8; ++j){
+
+			p	=	suns[j];
+			if(p >= 0){
+					
+				for(jj = j + 1; jj < 8; ++jj){
+					pp	=	suns[jj];
+					if(pp >= 0)
+						break;
+				}
+
+				if(jj < 8)
+					nextsib	=	pp;
+				else
+					nextsib	=	sib;
+
+				force_update_node_recursive(p, nextsib, no);
+
+				if(p >= All.NumPart){
+						
+					mass	+=	Nodes[p].u.d.mass;
+					s[0]	+=	Nodes[p].u.d.mass * Nodes[p].u.d.s[0];
+					s[1]	+=	Nodes[p].u.d.mass * Nodes[p].u.d.s[1];
+					s[2]	+=	Nodes[p].u.d.mass * Nodes[p].u.d.s[2];
+					vs[0]	+=	Nodes[p].u.d.mass * Extnodes[p].vs[0];
+					vs[0]	+=	Nodes[p].u.d.mass * Extnodes[p].vs[1];
+					vs[0]	+=	Nodes[p].u.d.mass * Extnodes[p].vs[2];
+					
+				}else{
+
+					pa	=	&P[p];
+
+					mass	+=	pa->Mass;
+					s[0]	+=	pa->Mass * pa->Pos[0];
+					s[1]	+=	pa->Mass * pa->Pos[1];
+					s[2]	+=	pa->Mass * pa->Pos[2];
+					vs[0]	+=	pa->Mass * pa->Vel[0];
+					vs[1]	+=	pa->Mass * pa->Vel[1];
+					vs[2]	+=	pa->Mass * pa->Vel[2];
+				}
+			}
+		}
+
+		if(mass){
+			
+			s[0]	/=	mass;
+			s[1]	/=	mass;
+			vs[0]	/=	mass;
+			vs[1]	/=	mass;
+			vs[2]	/=	mass;
+		
+		}else{
+
+			s[0]	=	Nodes[no].center[0];
+			s[1]	=	Nodes[no].center[1];
+			s[2]	=	Nodes[no].center[2];
+
+		}
+
+		Nodes[no].u.d.s[0]	=	s[0];
+		Nodes[no].u.d.s[1]	=	s[1];
+		Nodes[no].u.d.s[2]	=	s[2];
+		Nodes[no].u.d.mass	=	mass;
+
+		Extnodes[no].vs[0]	=	vs[0];
+		Extnodes[no].vs[1]	=	vs[1];
+		Extnodes[no].vs[2]	=	vs[2];
+
+		Nodes[no].u.d.sibling	=	sib;
+		Nodes[no].u.d.father	=	father;
+	
+	}else{
+		
+		if(last >= 0){
+			
+			if(last >= All.NumPart)
+				Nodes[last].u.d.nextnode	=	no;
+			else
+				Nextnode[last]	=	no;
+		}
+
+		last	=	no;
+
+		if(no < All.NumPart)
+			Father[no]	=	father;
+	}
 }
 
 

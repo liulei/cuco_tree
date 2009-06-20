@@ -18,3 +18,4 @@ int			* Nextnode;
 int			* Father;
 EXTNODE		* Extnodes;
 EXTNODE_BASE	* Extnodes_base;
+int			* Father;
