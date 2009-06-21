@@ -44,7 +44,7 @@ void gravity_tree(void){
 
 		force_treebuild(NumPart);
 
-		TreeReconstructFlag	=	0;
+//		TreeReconstructFlag	=	0;
 	}
 
 	int	i;
@@ -68,7 +68,7 @@ void force_treeevaluate_shortrange(int target){
 	double	r2, dx, dy, dz, mass, r, fac, u;
 	double	acc_x, acc_y, acc_z, pos_x, pos_y, pos_z;
 	double	eff_dist, dist;
-	
+
 	acc_x	=	0;
 	acc_y	=	0;
 	acc_z	=	0;
@@ -79,7 +79,7 @@ void force_treeevaluate_shortrange(int target){
 
 	no	=	All.NumPart;	/* root node */
 	while(no >= 0){
-		
+
 		if(no < All.NumPart){
 
 			dx	=	P[no].Pos[0] - pos_x;
@@ -91,6 +91,8 @@ void force_treeevaluate_shortrange(int target){
 			dz	=	NEAREST(dz);
 
 			r2	=	dx * dx + dy * dy + dz * dz;
+
+			printf("r2(particle): %f\n", r2);
 
 			mass	=	P[no].Mass;
 
@@ -142,6 +144,7 @@ void force_treeevaluate_shortrange(int target){
 
 			no	=	nop->u.d.sibling;
 		}
+
 					
 		r	=	sqrt(r2);
 					
@@ -167,6 +170,7 @@ void force_treeevaluate_shortrange(int target){
 			acc_z	+=	dz * fac;
 		}
 	}
+
 }
 
 void force_treeallocate(int maxnodes, int maxpart){
@@ -320,11 +324,14 @@ void force_treebuild(int npart){
 				if(numnodes >= MaxNodes){
 					printf("maximun number of tree nodes reached\n");
 					printf("we'd better stop!\n");
+					printf("numnodes: %d\nMaxNodes: %d\n", numnodes, MaxNodes);
 					exit(1);
 				}
 			}
 		}
 	}
+
+	printf("numnodes: %d\n", numnodes);
 
 	/* next computer multipole moments recursively.
 	 */
