@@ -69,6 +69,8 @@ void force_treeevaluate_shortrange(int target){
 	double	acc_x, acc_y, acc_z, pos_x, pos_y, pos_z;
 	double	eff_dist, dist;
 
+	int	count	=	0;
+
 	acc_x	=	0;
 	acc_y	=	0;
 	acc_z	=	0;
@@ -92,7 +94,7 @@ void force_treeevaluate_shortrange(int target){
 
 			r2	=	dx * dx + dy * dy + dz * dz;
 
-			printf("r2(particle): %f\n", r2);
+//			printf("r2(particle): %f\n", r2);
 
 			mass	=	P[no].Mass;
 
@@ -114,7 +116,7 @@ void force_treeevaluate_shortrange(int target){
 
 			r2	=	dx * dx + dy * dy + dz * dz;
 
-			if(r2 > rcut){
+			if(r2 > rcut2){
 
 				eff_dist	=	rcut + 0.5 * nop->len;
 
@@ -136,7 +138,7 @@ void force_treeevaluate_shortrange(int target){
 					continue;
 				}
 			}
-				
+			
 			if(nop->len * nop->len > r2 * All.ErrTolTheta * All.ErrTolTheta){
 				no	=	nop->u.d.nextnode;
 				continue;
@@ -169,8 +171,12 @@ void force_treeevaluate_shortrange(int target){
 			acc_y	+=	dy * fac;
 			acc_z	+=	dz * fac;
 		}
-	}
 
+		count++;
+	}
+	
+	printf("particle %d: %d\n", target, count);
+	printf("%f|%f|%f\n", acc_x, acc_y, acc_z);
 }
 
 void force_treeallocate(int maxnodes, int maxpart){
@@ -338,10 +344,26 @@ void force_treebuild(int npart){
 	last	=	-1;
 	force_update_node_recursive(All.NumPart, -1, -1);
 
+	printf("last: %d\n", last);
+
 	if(last >= All.NumPart)
 		Nodes[last].u.d.nextnode	=	-1;
 	else
 		Nextnode[last]	=	-1;
+/*
+	for(last = 0; ; ++last){
+		if(Nextnode[last] < 0){
+			printf("%d: %d\t", last, Nextnode[last]);
+			break;
+		}
+	}
+*/
+	printf("MaxNodes: %d\n", MaxNodes);
+/*
+	for(last = NumPart; last < NumPart + 100; ++last){
+		printf("Node %d: %d\n", last, Nodes[last].u.d.sibling);
+	}
+*/
 }
 
 void force_update_node_recursive(int no, int sib, int father){
@@ -350,7 +372,7 @@ void force_update_node_recursive(int no, int sib, int father){
 	PARTICLE	* pa;
 	double	s[3], vs[3], mass;
 
-	if(no > All.NumPart){
+	if(no >= All.NumPart){
 	/* This is a node. */
 		for(j = 0; j < 8; ++j)
 			suns[j]	=	Nodes[no].u.suns[j];
@@ -420,6 +442,7 @@ void force_update_node_recursive(int no, int sib, int father){
 			
 			s[0]	/=	mass;
 			s[1]	/=	mass;
+			s[2]	/=	mass;
 			vs[0]	/=	mass;
 			vs[1]	/=	mass;
 			vs[2]	/=	mass;
