@@ -94,8 +94,6 @@ void force_treeevaluate_shortrange(int target){
 
 			r2	=	dx * dx + dy * dy + dz * dz;
 
-//			printf("r2(particle): %f\n", r2);
-
 			mass	=	P[no].Mass;
 
 			no	=	Nextnode[no];
@@ -175,13 +173,10 @@ void force_treeevaluate_shortrange(int target){
 		count++;
 	}
 	
-//	printf("particle %d: %d\n", target, count);
 	P[target].GravAccel[0]  =   acc_x * All.G;
 	P[target].GravAccel[1]  =   acc_y * All.G;
 	P[target].GravAccel[2]  =   acc_z * All.G;
 	
-//	printf("%f|%f|%f\n", acc_x, acc_y, acc_z);
-
 }
 
 void force_treeallocate(int maxnodes, int maxpart){
@@ -249,6 +244,7 @@ void force_treebuild(int npart){
 	nfreep++;
 	nfree++;
 
+	nfreep	=	&Nodes[nfree];
 	parent	=	-1;
 
 /*	next insert all particles one by one
@@ -300,7 +296,7 @@ void force_treebuild(int npart){
 				else
 					nfreep->center[1]	=	Nodes[parent].center[1] - lenhalf;
 
-				if(subnode & 1)
+				if(subnode & 4)
 					nfreep->center[2]	=	Nodes[parent].center[2] + lenhalf;
 				else
 					nfreep->center[2]	=	Nodes[parent].center[2] - lenhalf;
@@ -342,8 +338,6 @@ void force_treebuild(int npart){
 		}
 	}
 
-	printf("numnodes: %d\n", numnodes);
-
 	/* next computer multipole moments recursively.
 	 */
 	last	=	-1;
@@ -355,20 +349,6 @@ void force_treebuild(int npart){
 		Nodes[last].u.d.nextnode	=	-1;
 	else
 		Nextnode[last]	=	-1;
-/*
-	for(last = 0; ; ++last){
-		if(Nextnode[last] < 0){
-			printf("%d: %d\t", last, Nextnode[last]);
-			break;
-		}
-	}
-*/
-	printf("MaxNodes: %d\n", MaxNodes);
-/*
-	for(last = NumPart; last < NumPart + 100; ++last){
-		printf("Node %d: %d\n", last, Nodes[last].u.d.sibling);
-	}
-*/
 }
 
 void force_update_node_recursive(int no, int sib, int father){
