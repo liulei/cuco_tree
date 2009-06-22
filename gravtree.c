@@ -175,8 +175,13 @@ void force_treeevaluate_shortrange(int target){
 		count++;
 	}
 	
-	printf("particle %d: %d\n", target, count);
-	printf("%f|%f|%f\n", acc_x, acc_y, acc_z);
+//	printf("particle %d: %d\n", target, count);
+	P[target].GravAccel[0]  =   acc_x * All.G;
+	P[target].GravAccel[1]  =   acc_y * All.G;
+	P[target].GravAccel[2]  =   acc_z * All.G;
+	
+//	printf("%f|%f|%f\n", acc_x, acc_y, acc_z);
+
 }
 
 void force_treeallocate(int maxnodes, int maxpart){
