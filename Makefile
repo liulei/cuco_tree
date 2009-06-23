@@ -1,9 +1,10 @@
 
 OPT			+=	-DTREE
 #OPT			+=	-DLINKLIST
+OPT			+=	-DOPENMP
 
 CC			=	gcc
-OPTIMIZE	=	-O2	-W -Wall
+OPTIMIZE	=	-O2	-W -Wall -fopenmp
 GSL_INCL	=	-I/usr/local/include
 GSL_LIBS	=	-L/usr/local/lib
 FFTW_INCL	=	-I/usr/local/include
@@ -30,7 +31,8 @@ INCL		=	allvars.h proto.h Makefile
 CFLAGS		=	$(OPTIONS) $(GSL_INCL) $(FFTW_INCL)
 
 LIBS		=	$(GSL_LIBS) -lgsl -lgslcblas -lm \
-				$(FFTW_LIBS) -lrfftw -lfftw
+				$(FFTW_LIBS) -lrfftw -lfftw \
+				-lrfftw_threads -lfftw_threads -lpthread -fopenmp
 
 $(EXEC)	:	$(OBJS)
 	$(CC) $(OBJS) $(LIBS) -o $(EXEC)

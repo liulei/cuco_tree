@@ -51,6 +51,7 @@ void gravity_tree(void){
 
 	printf("Calculating short range force using tree method...\n");
 
+#pragma omp parallel for private(i)
 	for(i = 0; i < NumPart; ++i){
 		if(P[i].Ti_endstep == All.Ti_Current){
 			force_treeevaluate_shortrange(i);

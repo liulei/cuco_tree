@@ -1,8 +1,9 @@
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<math.h>
+#include	<omp.h>
 
-#include	<rfftw.h>
+#include	<rfftw_threads.h>
 
 #include	"allvars.h"
 #include	"proto.h"
@@ -22,6 +23,8 @@ void pm_init_periodic(void){
 
 	All.Asmth	=	ASMTH * All.BoxSize / PMGRID;
 	All.Rcut	=	RCUT * All.Asmth;
+
+	fftw_threads_init();
 
 	fft_forward_plan = rfftw3d_create_plan(PMGRID, PMGRID, PMGRID,
 						FFTW_REAL_TO_COMPLEX, FFTW_ESTIMATE | FFTW_IN_PLACE);
@@ -86,9 +89,11 @@ void pmforce_periodic(void){
 
 	pm_init_periodic_allocate();
 
+#pragma omp parallel for private(i)
 	for(i = 0; i < dimx * dimy * dimz; ++i)
 		rhogrid[i]	=	0;
-	
+
+#pragma omp parallel for private(i, slab_x, slab_y, slab_z, slab_xx, slab_yy, slab_zz, dx, dy, dz)	
 	for(i = 0; i < NumPart; ++i){
 
 		slab_x	=	to_slab_fac * P[i].Pos[0];
@@ -115,14 +120,22 @@ void pmforce_periodic(void){
 		if(slab_zz >= PMGRID)
 			slab_zz	-=	PMGRID;
 
+#pragma omp atomic
 		rhogrid[(slab_x * dimy + slab_y) * dimz + slab_z]	+=	P[i].Mass * (1.0 - dx) * (1.0 - dy) * (1.0 - dz);
+#pragma omp atomic
 		rhogrid[(slab_x * dimy + slab_yy) * dimz + slab_z]	+=	P[i].Mass * (1.0 - dx) * dy * (1.0 - dz);
+#pragma omp atomic
 		rhogrid[(slab_x * dimy + slab_y) * dimz + slab_zz]	+=	P[i].Mass * (1.0 - dx) * (1.0 - dy) * dz;
+#pragma omp atomic
 		rhogrid[(slab_x * dimy + slab_yy) * dimz + slab_zz]	+=	P[i].Mass * (1.0 - dx) * dy * dz;
 
+#pragma omp atomic
 		rhogrid[(slab_xx * dimy + slab_y) * dimz + slab_z]	+=	P[i].Mass * dx * (1.0 - dy) * (1.0 - dz);
+#pragma omp atomic
 		rhogrid[(slab_xx * dimy + slab_yy) * dimz + slab_z]	+=	P[i].Mass * dx * dy * (1.0 - dz);
+#pragma omp atomic
 		rhogrid[(slab_xx * dimy + slab_y) * dimz + slab_zz]	+=	P[i].Mass * dx * (1.0 - dy) * dz;
+#pragma omp atomic
 		rhogrid[(slab_xx * dimy + slab_yy) * dimz + slab_zz]+=	P[i].Mass * dx * dy * dz;
 	}
 
@@ -130,10 +143,11 @@ void pmforce_periodic(void){
  * real to complex in place fft, the results are stored in rhogrid.
  */
 
-	rfftwnd_one_real_to_complex(fft_forward_plan, rhogrid, NULL);
+	rfftwnd_threads_one_real_to_complex(2, fft_forward_plan, rhogrid, NULL);
 
 /* Multiply with Green's function
  */
+#pragma omp parallel for private(x, y, z, kx, ky, kz, k2, smth, fx, fy, fz, ff, ip)
 	for(x = 0; x < PMGRID; ++x){
 		for(y = 0; y < PMGRID; ++y){
 			for(z = 0; z < PMGRID / 2 + 1; ++z){
@@ -178,7 +192,9 @@ void pmforce_periodic(void){
 
 					ip	=	PMGRID * (PMGRID / 2 + 1) * x + (PMGRID / 2 + 1) * y + z;
 
+#pragma omp atomic
 					fft_of_rhogrid[ip].re	*=	smth;
+#pragma omp atomic
 					fft_of_rhogrid[ip].im	*=	smth;
 				}
 			}
@@ -187,9 +203,15 @@ void pmforce_periodic(void){
 	
 	fft_of_rhogrid[0].re	=	fft_of_rhogrid[0].im	=	0.0;
 
-	rfftwnd_one_complex_to_real(fft_inverse_plan, fft_of_rhogrid, NULL);
+	rfftwnd_threads_one_complex_to_real(2, fft_inverse_plan, fft_of_rhogrid, NULL);
 
 	for(dim = 0; dim < 3; dim++){
+
+#pragma omp parallel for private(i)
+		for(i = 0; i < gridsize; ++i)
+			forcegrid[i]	=	0;
+
+#pragma omp parallel for private(x, y, z, xrr, xll, xr, xl, yrr, yll, yr, yl, zrr, zll, zr, zl)
 		for(x = 0; x < PMGRID; ++x){
 			for(y = 0; y < PMGRID; ++y){
 				for(z = 0; z < PMGRID; ++z){
@@ -244,9 +266,9 @@ void pmforce_periodic(void){
 							break;
 					}
 
-					forcegrid[(x * PMGRID + y) * PMGRID + z]
-						=	
-						fac * ((4.0 / 3) *
+#pragma omp atomic
+					forcegrid[(x * PMGRID + y) * PMGRID + z]	+=
+							fac * ((4.0 / 3) *
 							   (rhogrid[(xl * dimy + yl) * dimz + zl] 
 								- rhogrid[(xr * dimy + yr) * dimz + zr])
 							   -(1.0 / 6) *
@@ -256,6 +278,7 @@ void pmforce_periodic(void){
 			}
 		}
 
+#pragma omp parallel for private(i, slab_x, slab_xx, slab_y, slab_yy, slab_z, slab_zz, dx, dy, dz, acc_dim)
 		for(i = 0; i < NumPart; ++i){
 			slab_x	=	to_slab_fac * P[i].Pos[0];
 			if(slab_x >= PMGRID)

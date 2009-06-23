@@ -14,6 +14,7 @@ void move_particles(int time0, int time1){
 
 	dt_drift	=	get_drift_factor(time0, time1);
 
+#pragma omp parallel for private(i, j)
 	for(i = 0; i < NumPart; ++i){
 		for(j = 0; j < 3; ++j){
 			P[i].Pos[j]	+=	P[i].Vel[j] * dt_drift;
@@ -27,7 +28,8 @@ void do_box_wrapping(void){
 	double	boxsize;
 
 	boxsize	=	All.BoxSize;
-	
+
+#pragma omp parallel for private(i, j)
 	for(i = 0; i < NumPart; ++i){
 		for(j = 0; j < 3; ++j){
 			

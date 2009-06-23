@@ -23,6 +23,7 @@ void advance_and_find_timesteps(void){
 
 	dt_displacement	=	All.MaxSizeTimestep;
 
+#pragma omp parallel for private(i, ti_step, ti_min, tstart, tend, dt_gravkick)
 	for(i = 0; i < NumPart; ++i){
 
 		if(P[i].Ti_endstep == All.Ti_Current){
@@ -83,6 +84,7 @@ void advance_and_find_timesteps(void){
 		All.PM_Ti_begstep	=	All.PM_Ti_endstep;
 		All.PM_Ti_endstep	=	All.PM_Ti_begstep + ti_step;
 
+#pragma omp parallel for private(i, j)
 		for(i = 0; i < NumPart; ++i){
 			for(j = 0; j < 3; ++j){
 				P[i].Vel[j]	+=	P[i].GravPM[j] * dt_gravkick;
