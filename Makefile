@@ -8,7 +8,7 @@ GSL_LIBS	=	-L/usr/local/lib
 CUFFT_INCL	=	-I/usr/local/cuda/include
 CUFFT_LIBS	=	-L/usr/local/cuda/lib
 
-OPTIONS		=	$(OPTIMIZE)
+OPTIONS		=	$(OPTIMIZE) -DLINKLIST
 
 EXEC		=	cuco
 

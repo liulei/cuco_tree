@@ -6,7 +6,7 @@
 
 #include	<stdio.h>
 
-#define	PMGRID		32
+#define	PMGRID		128
 
 #define	TIMEBASE		(1<<28)
 
