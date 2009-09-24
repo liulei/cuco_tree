@@ -1,38 +1,27 @@
+# If we want to use cuda gramma, compiler should be switched to nvcc
 
-OPT			+=	-DTREE
-#OPT			+=	-DLINKLIST
-OPT			+=	-DOPENMP
-
-CC			=	gcc
-OPTIMIZE	=	-O2	-W -Wall -fopenmp
+CC			=	nvcc
+#OPTIMIZE	=	-O2 -W -Wall
+OPTIMIZE	=	-O2 
 GSL_INCL	=	-I/usr/local/include
 GSL_LIBS	=	-L/usr/local/lib
-FFTW_INCL	=	-I/usr/local/include
-FFTW_LIBS	=	-L/usr/local/lib
+CUFFT_INCL	=	-I/usr/local/cuda/include
+CUFFT_LIBS	=	-L/usr/local/cuda/lib
 
-OPTIONS		=	$(OPTIMIZE) $(OPT)
+OPTIONS		=	$(OPTIMIZE)
 
 EXEC		=	cuco
 
-OBJS		=	allvars.o begrun.o init.o read_ic.o \
+OBJS		=	allvars.o begrun.o init.o read_ic.o gravlist.o \
 				main.o driftfac.o longrange.o pm_periodic.o \
 				run.o predict.o accel.o io.o timestep.o
 
-ifeq (TREE, $(findstring TREE, $(OPT)))
-	OBJS	+=	gravtree.o
-endif
-
-ifeq (LINKLIST, $(findstring LINKLIST, $(OPT)))
-	OBJS	+=	gravlist.o
-endif
-
 INCL		=	allvars.h proto.h Makefile
 
-CFLAGS		=	$(OPTIONS) $(GSL_INCL) $(FFTW_INCL)
+CFLAGS		=	$(OPTIONS) $(GSL_INCL) $(CUFFT_INCL)
 
 LIBS		=	$(GSL_LIBS) -lgsl -lgslcblas -lm \
-				$(FFTW_LIBS) -lrfftw -lfftw \
-				-lrfftw_threads -lfftw_threads -lpthread -fopenmp
+				$(CUFFT_LIBS) -lcudart -lcufft
 
 $(EXEC)	:	$(OBJS)
 	$(CC) $(OBJS) $(LIBS) -o $(EXEC)

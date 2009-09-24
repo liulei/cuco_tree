@@ -18,11 +18,5 @@ void compute_accelerations(void){
 /* Calculate the short range force by direct summation with linklist 
  * method to enhance calculation.
  */
-#ifdef	TREE
-	gravity_tree();
-#endif
-
-#ifdef	LINKLIST
 	gravity_linklist();
-#endif
 }
