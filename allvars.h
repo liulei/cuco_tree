@@ -45,13 +45,13 @@ typedef	struct	particle_data{
 typedef struct	io_header{
 
 	int		NumPart;
-	double	Mass;
-	double	Time;
-	double	Redshift;
-	double	BoxSize;
-	double	Omega0;
-	double	OmegaLambda;
-	double	HubbleParam;
+	float	Mass;
+	float	Time;
+	float	Redshift;
+	float	BoxSize;
+	float	Omega0;
+	float	OmegaLambda;
+	float	HubbleParam;
 }HEADER;
 
 typedef	struct	global_data{
