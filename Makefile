@@ -1,6 +1,6 @@
 # If we want to use cuda gramma, compiler should be switched to nvcc
 
-CC			=	nvcc
+CC			=	gcc
 #OPTIMIZE	=	-O2 -W -Wall
 OPTIMIZE	=	-O2 
 GSL_INCL	=	-I/usr/local/include
